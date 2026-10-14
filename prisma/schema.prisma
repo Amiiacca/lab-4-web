@@ -1,0 +1,36 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model Merchant {
+    id        String    @id @default(uuid())
+    name      String
+    email     String    @unique
+    products  Product[]
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+}
+
+model Product {
+    id          String   @id @default(uuid())
+    title       String
+    description String?
+    price       Float
+    merchantId  String
+    merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+    tags        Tag[]    @relation("ProductToTag")
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model Tag {
+    id        String    @id @default(uuid())
+    name      String    @unique
+    products  Product[] @relation("ProductToTag")
+    createdAt DateTime  @default(now())
+}
